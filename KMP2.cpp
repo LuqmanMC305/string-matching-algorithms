@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <string>
+
 using namespace std;
 
 //KMP search function
@@ -13,11 +14,11 @@ vector<int> kmp_search(const string& str, const string& subStr, const vector<int
 
     while (currStr < str.length())
     {
-        if (subStr[currSubStr] == str[currStr]) // Move the next characters in S and W
+        if (subStr[currSubStr] == str[currStr]) // Move the next characters in str and subStr
         {
             currStr++;
             currSubStr++;
-            if (currSubStr == subStr.length()) //If the end of pattern is reached, store the position & reset k
+            if (currSubStr == subStr.length()) //If the end of pattern is reached, store the position & reset currSubStr
             {
                 pos.push_back(currStr - currSubStr);
                 numPos++;
@@ -26,8 +27,8 @@ vector<int> kmp_search(const string& str, const string& subStr, const vector<int
         }
         else
         {
-            currSubStr = table[currSubStr]; //If the charactors aren't matched, update k based on the failure function
-            if (currSubStr < 0) //If k is negative, move to the next character in S & reset k
+            currSubStr = table[currSubStr]; //If the charactors aren't matched, update currSubStr based on the failure function
+            if (currSubStr < 0) //If currSubStr is negative, move to the next character in str & reset currSubStr
             {
                 currStr++;
                 currSubStr++;
@@ -47,10 +48,10 @@ vector<int> compute_failure_function(const string& subStr)
 
     while (pos < subStr.length())
     {
-        if (subStr[pos] == subStr[cnd]) // If the characters match, update T[pos] with T[cnd]
+        if (subStr[pos] == subStr[cnd]) // If the characters match, update t[pos] with t[cnd]
             t[pos] = t[cnd];
         else 
-        { //If they aren't update T[pos] with cnd and update cnd
+        { // If the characters don't match, update t[pos] with cnd and update cnd
             t[pos] = cnd;
             cnd = t[cnd];
             while (cnd >= 0 && subStr[pos] != subStr[cnd])
@@ -59,6 +60,7 @@ vector<int> compute_failure_function(const string& subStr)
         pos++;
         cnd++;
     }
+
     t[pos] = cnd;
 
     return t;
@@ -67,24 +69,28 @@ vector<int> compute_failure_function(const string& subStr)
 int main()
 {
     string str, subStr;
+
+    // Get the input text from user
     cout << "Enter the text: " << endl;
     getline(cin, str);
+
+    // Search the pattern that the user wants to find
     cout << "Enter the pattern that you want to find: " << endl;
     cin >> subStr;
 
+    // Compute the failure function/partial match table for the pattern
     vector<int> partialMatchTable = compute_failure_function(subStr);
-    vector<int> pattern = kmp_search(str, subStr, partialMatchTable);
 
+    // Search for the pattern in the text using KMP algorithm
+    vector<int> pattern = kmp_search(str, subStr, partialMatchTable);
+    
+    // Print the positions where the pattern is found
     if(pattern.size() == 0)
-    {
         cout << "No substring is found." << endl;
-    }
     else
     {
         for (int pos : pattern)
-        {
             cout << "Found at position: " << pos << endl;
-        }
     }
     cout << endl;
 
